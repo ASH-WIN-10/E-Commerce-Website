@@ -1,0 +1,8 @@
+.venv
+.env
+
+__pycache__
+tempCodeRunner.py
+.idea
+
+app.db
