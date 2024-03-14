@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hello World!</h1>
-    <a href="{{url_for('login')}}">Login\</a>
-    <a href="{{url_for('register')}}">Register\</a>
-    <a href="{{url_for('main')}}">Main\</a>
-    <a href="{{url_for('logout')}}">Logout\</a>
+    <h1>Index</h1>
+    <a href="{{url_for('login')}}">/Login</a> <br/>
+    <a href="{{url_for('register')}}">/Register</a> <br/>
+    <a href="{{url_for('main')}}">/Main</a> <br/>
+    <a href="{{url_for('logout')}}">/Logout</a> <br/>
 {% endblock content %}

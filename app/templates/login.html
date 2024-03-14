@@ -1,6 +1,26 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
-    {{ wtf.quick_form(form) }}
+    <div class="container">
+        {% with messages=get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <p style="color: red;">{{message}}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{url_for('login')}}" method="post">
+            {{ wtf.form_field(form.email) }}
+            {{ wtf.form_field(form.password) }}
+            <div class="d-flex flex-row">
+                {{ form.remember_me(class="form-check") }} {{ form.remember_me.label(class="col-form-label mb-1") }}
+            </div> 
+            {{ form.submit(class="form-control btn btn-primary") }}
+        </form>
+    </div>
+    <div class="container">
+        New here? <a href="{{url_for('register')}}">Register</a> now!
+    </div>
 {% endblock content %}
