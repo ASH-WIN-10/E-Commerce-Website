@@ -5,6 +5,7 @@ from typing import Optional
 from flask_login import UserMixin
 from app import db, login
 
+
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64))
@@ -22,16 +23,20 @@ class User(UserMixin, db.Model):
     def __repr__(self) -> str:
         return '<User {}>'.format(self.username)
     
-# class Items(db.Model):
-#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-#     item_name: so.Mapped[str] = so.mapped_column(sa.String(64))
-#     price: so.Mapped[int] = so.mapped_column(sa.Integer)
-#     owner_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True, nullable=True)
 
-#     owner: so.Mapped[User] = so.relationship(back_populates='items')
+class Items(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    item_name: so.Mapped[str] = so.mapped_column(sa.String(64))
+    item_description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(512))
+    price: so.Mapped[int] = so.mapped_column(sa.Integer)
+    img_url: so.Mapped[str] = so.mapped_column(sa.String)
+    # owner_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True, nullable=True)
 
-#     def __repr__(self) -> str:
-#         return '<Items {}>'.format(self.item_name)
+    # owner: so.Mapped[User] = so.relationship(back_populates='items')
+
+    def __repr__(self) -> str:
+        return '<Item {}>'.format(self.item_name)
+    
     
 @login.user_loader
 def load_user(id):

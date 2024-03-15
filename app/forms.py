@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
+from wtforms import StringField, EmailField, PasswordField, SubmitField, BooleanField, IntegerField, TextAreaField, URLField
+from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
 import sqlalchemy as sa
 from app import db
 from app.models import User
@@ -22,3 +22,10 @@ class RegisterForm(FlaskForm):
         user = db.session.scalar(sa.select(User).where(User.email == email.data))
         if user is not None:
             raise ValidationError("This email is already registered.")
+        
+class AddItemForm(FlaskForm):
+    item_name = StringField("Item name", validators=[DataRequired()])
+    item_description = TextAreaField("Item description", validators=[DataRequired(), Length(max=512)])
+    price = IntegerField("Price", validators=[DataRequired()])
+    img_url = URLField("Item image")
+    submit = SubmitField("Add")

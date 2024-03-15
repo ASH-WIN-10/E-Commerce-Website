@@ -1,14 +1,9 @@
 {% extends "base.html" %}
-{% import "bootstrap_wtf.html" as wtf %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
     <div class="container">
-        <form action="{{url_for('login')}}" method="post">
-            {{ wtf.form_field(form.username) }}
-            {{ wtf.form_field(form.email) }}
-            {{ wtf.form_field(form.password) }}
-            {{ wtf.form_field(form.password2) }}
-            {{ form.submit(class="form-control btn btn-primary") }}
-        </form>
+        {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        <!--{{ form.submit(class="form-control btn btn-primary") }}-->
     </div>
 {% endblock content %}

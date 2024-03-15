@@ -1,14 +1,24 @@
-from flask import render_template, redirect, flash, url_for, request
+from flask import render_template, redirect, flash, url_for, request, abort
 from flask_login import login_required, current_user, login_user, logout_user
 import sqlalchemy as sa
 from urllib.parse import urlsplit
 from app import app, db
-from app.models import User
-from app.forms import LoginForm, RegisterForm
+from app.models import User, Items
+from app.forms import LoginForm, RegisterForm, AddItemForm
+
+
+def admin_only(f):
+    def decorated_function(*args, **kwargs):
+        if current_user.is_anonymous or current_user.email != app.config['ADMIN_EMAIL']:
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -24,16 +34,17 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     
     form = LoginForm()
-    if form.validate_on_submit() or request.method == 'POST':
+    if form.validate_on_submit():
         user = db.session.scalar(sa.select(User).where(User.email == form.email.data))
 
-        if user == None or user.check_password(form.password.data):
+        if user == None or not user.check_password(form.password.data):
             flash("Incorrect email or password.")
             return redirect(url_for('login'))
         
@@ -46,10 +57,30 @@ def login():
         return redirect(next_page)
     return render_template('login.html', form=form)
 
-@app.route('/main')
+
+@app.route('/shop/add-item', methods=['GET', 'POST'], endpoint='add_item')
+@admin_only
+def add_item():
+    form = AddItemForm()
+    if form.validate_on_submit():
+        item = Items(
+            item_name = form.item_name.data,
+            item_description = form.item_description.data,
+            price = form.price.data,
+            img_url = form.img_url.data
+        )
+        db.session.add(item)
+        db.session.commit()
+        return redirect(url_for('shop'))
+    return render_template("add_item.html", form=form)
+
+
+@app.route('/shop')
 @login_required
-def main():
-    return render_template('main.html')
+def shop():
+    items = db.session.scalars(sa.Select(Items)).all()
+    return render_template('shop.html', items=items)
+
 
 @app.route('/logout')
 @login_required
