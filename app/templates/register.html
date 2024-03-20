@@ -1,9 +1,53 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+<link rel="stylesheet" href="static/css/styles.css" />
+{% endblock styles %}
 
 {% block content %}
-    <div class="container">
-        {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
-        <!--{{ form.submit(class="form-control btn btn-primary") }}-->
-    </div>
+<div class="container">
+    <h1>New user, Register Now!</h1>
+    <p>Please register an account</p>
+    <form action="{{url_for('register')}}" method='post' novalidate>
+        {% with messages=get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <p class="errors">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {{ form.hidden_tag() }}
+        
+        {% if form.username.errors %}
+            <ul class="errors">
+            {% for error in form.username.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {{ form.username(placeholder="Username") }}
+
+        {% if form.email.errors %}
+            <ul class="errors">
+            {% for error in form.email.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {{ form.email(placeholder="Email") }}
+
+        {% if form.password.errors %}
+            <ul class="errors">
+            {% for error in form.password.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {{ form.password(placeholder="Password") }}
+
+        {{ form.submit }}
+    </form>
+    <p>Existing User? <a href="{{url_for('login')}}">Login</a></p>
+</div>
 {% endblock content %}

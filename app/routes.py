@@ -51,7 +51,6 @@ def login():
         login_user(user, remember=form.remember_me.data)
 
         next_page = request.args.get('next')
-        print(next_page)
         if not next_page or urlsplit(next_page).netloc != '' or next_page=='logout':
             next_page = url_for('home')
         return redirect(next_page)
