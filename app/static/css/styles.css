@@ -91,3 +91,7 @@ button:hover {
     color: red;
     text-align: start;
 }
+
+ul {
+    list-style-type: symbols('*');
+}

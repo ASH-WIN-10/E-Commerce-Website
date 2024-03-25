@@ -6,3 +6,6 @@ tempCodeRunner.py
 .idea
 
 app.db
+app.sqlite
+
+.swp

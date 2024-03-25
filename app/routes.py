@@ -3,7 +3,7 @@ from flask_login import login_required, current_user, login_user, logout_user
 import sqlalchemy as sa
 from urllib.parse import urlsplit
 from app import app, db
-from app.models import User, Items
+from app.models import User, Item, Cart
 from app.forms import LoginForm, RegisterForm, AddItemForm
 
 
@@ -57,12 +57,19 @@ def login():
     return render_template('login.html', form=form)
 
 
+@app.route('/shop')
+@login_required
+def shop():
+    items = db.session.scalars(sa.Select(Item)).all()
+    return render_template('shop.html', items=items)
+
+
 @app.route('/shop/add-item', methods=['GET', 'POST'], endpoint='add_item')
 @admin_only
 def add_item():
     form = AddItemForm()
     if form.validate_on_submit():
-        item = Items(
+        item = Item(
             item_name = form.item_name.data,
             item_description = form.item_description.data,
             price = form.price.data,
@@ -74,11 +81,43 @@ def add_item():
     return render_template("add_item.html", form=form)
 
 
-@app.route('/shop')
-@login_required
-def shop():
-    items = db.session.scalars(sa.Select(Items)).all()
-    return render_template('shop.html', items=items)
+@app.route('/shop/remove/<item_id>', endpoint='remove_item')
+@admin_only
+def remove_item(item_id):
+    item = db.session.get(Item, item_id)
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for('shop'))
+
+@app.route('/shop/cart')
+def cart():
+    cart_items = db.session.scalars(current_user.items_in_cart.select()).all()
+    return render_template('cart.html', cart_items=cart_items)
+
+
+@app.route('/shop/cart/add/<item_id>')
+def add_to_cart(item_id):
+    cart_item = Cart(user_id=current_user.id, item_id=item_id)
+    if db.session.scalar(sa.select(Cart).where(Cart.user_id == current_user.id, Cart.item_id == item_id)):
+        print("Inside")
+        flash("Item already in the cart.")
+    else:
+        db.session.add(cart_item)
+        db.session.commit()
+    return redirect(url_for('shop'))
+
+
+@app.route('/shop/cart/remove.<cart_id>')
+def remove_from_cart(cart_id):
+    cart_item = db.session.get(Cart, cart_id)
+    db.session.delete(cart_item)
+    db.session.commit()
+    return redirect(url_for('cart'))
+
+
+@app.route('/shop/buy')
+def buy():
+    return 'Buy'
 
 
 @app.route('/logout')

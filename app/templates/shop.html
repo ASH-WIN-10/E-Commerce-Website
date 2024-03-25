@@ -2,12 +2,34 @@
 
 {% block content %}
     <h1>Shop</h1>
+    <a href="{{url_for('cart')}}">/Cart</a>
+
+    {% with messages=get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p class="errors">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     {% for item in items %}
     <div class="card">
         <img src="{{ item.img_url }}" alt="Item Image" style="width: 200px;"/>
         <h3>{{ item.item_name }}</h3>
         <p>{{ item.price }}</p>
+        <p>{{ item.item_description }}</p>
+        <a href="{{url_for('add_to_cart', item_id=item.id)}}">
+            <button>Add to Cart</button>
+        </a>
+        <a href="{{url_for('buy')}}">
+            <button>Buy Now</button>
+        </a>
+        <a href="{{url_for('remove_item', item_id=item.id)}}">
+            <button>Remove Item</button>
+        </a>
     </div>
     {% endfor %}
-    <a href="{{url_for('add_item')}}" type="button">Add Item</a>
+    
+    <br>
+    <a href="{{url_for('add_item')}}"><button>Add item</button></a>
 {% endblock content %}

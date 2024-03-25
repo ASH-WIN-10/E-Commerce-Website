@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for cart in cart_items %}
+    <div class="card">
+        <img src="{{ cart.item.img_url }}" alt="Item Image" style="width: 200px;"/>
+        <h3>{{ cart.item.item_name }}</h3>
+        <p>{{ cart.item.price }}</p>
+        <p>{{ cart.item.item_description }}</p>
+        <a href="{{url_for('remove_from_cart', cart_id=cart.id)}}"><button>Remove</button></a>
+        <a href="{{url_for('buy')}}"><button>Buy Now</button></a>
+    </div>
+    {% endfor %}
+{% endblock content %}
